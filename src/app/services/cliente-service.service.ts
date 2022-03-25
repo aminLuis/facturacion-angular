@@ -30,8 +30,8 @@ export class ClienteServiceService {
     return this.http.get<Cliente>(this.URL+"/"+id).
     pipe(
       catchError(e=>{
-        console.error(e.error.mensaje)
-        Swal.fire('Error al listar cliente',e.error.mensaje,'error')
+        console.error(e.error.mensaje);
+        this.mensaje_error('Error al listar cliente');
         return throwError(e);
       })
     )
@@ -42,6 +42,11 @@ export class ClienteServiceService {
     pipe(
       tap(()=>{
         this.refresh.next();
+      }),
+      catchError(e=>{
+        console.error(e.error.mensaje);
+        this.mensaje_error('Error al crear cliente');
+        return throwError(e);
       })
     )
   }
@@ -51,6 +56,11 @@ export class ClienteServiceService {
     pipe(
       tap(()=>{
         this.refresh.next();
+      }),
+      catchError(e=>{
+        console.error(e.error.mensaje);
+        this.mensaje_error('Error al editar cliente');
+        return throwError(e);
       })
     )
   }
@@ -60,8 +70,22 @@ export class ClienteServiceService {
     pipe(
       tap(()=>{
         this.refresh.next();
+      }),
+      catchError(e=>{
+        console.error(e.error.mensaje);
+        this.mensaje_error('Error al eliminar cliente');
+        return throwError(e);
       })
     )
+  }
+
+  mensaje_error(texo:string){
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: texo,
+      //footer: '<a href="">Why do I have this issue?</a>'
+    })
   }
 
 }
