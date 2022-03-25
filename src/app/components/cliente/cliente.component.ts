@@ -14,12 +14,20 @@ export class ClienteComponent implements OnInit {
 
 
   clientes: Cliente[]=[];
+  @Input() cliente!: Cliente;
   form_cliente_nuevo: FormGroup;
+  form_cliente_editar:FormGroup;
   @Input() subscription!: Subscription;
 
   constructor(private api_cliente:ClienteServiceService, public form:FormBuilder) {
 
     this.form_cliente_nuevo = form.group({
+      nombre:['',Validators.required],
+      apellidos:['',Validators.required],
+      email:['',Validators.compose([Validators.email, Validators.required])]
+    });
+
+    this.form_cliente_editar = form.group({
       nombre:['',Validators.required],
       apellidos:['',Validators.required],
       email:['',Validators.compose([Validators.email, Validators.required])]
@@ -53,9 +61,40 @@ export class ClienteComponent implements OnInit {
 
   }
 
+  update_cliente(){
+    if(this.form_cliente_editar.valid){
+      this.api_cliente.updateCliente(this.cliente).subscribe();
+      this.mensaje('Se ha actualizado el cliente');
+    }else{
+      this.mensaje_error('Formulacio no valido');
+    }
+  }
 
+  delete_cliente(id:BigInt){
+    Swal.fire({
+      title: '¿Seguro que desea eliminar el registro?',
+      text: "El registro se eliminará permanentemente",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, deseo eliminarlo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.api_cliente.deleteCliente(id).subscribe();
+        Swal.fire(
+          'Eliminado!',
+          'El registro ha sido eliminado.',
+          'success'
+        )
+      }
+    })
+  
+}
 
-
+  cargar_datos(cliente:Cliente){
+    this.cliente = cliente;
+  }
 
 
   mensaje(texto: string){

@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Cliente } from '../models/Cliente.interface';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +27,14 @@ export class ClienteServiceService {
   }
 
   public getCliente(id:BigInt):Observable<Cliente>{
-    return this.http.get<Cliente>(this.URL+"/"+id);
+    return this.http.get<Cliente>(this.URL+"/"+id).
+    pipe(
+      catchError(e=>{
+        console.error(e.error.mensaje)
+        Swal.fire('Error al listar cliente',e.error.mensaje,'error')
+        return throwError(e);
+      })
+    )
   }
 
   public saveCliente(nuevo:Cliente):Observable<Cliente>{

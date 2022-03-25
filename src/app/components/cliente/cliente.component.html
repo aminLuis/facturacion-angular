@@ -3,7 +3,10 @@
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-nuevo">Nuevo</button>
     <hr>
 
-    <table class="table table-hover table-striped table-sm">
+    <div *ngIf="clientes.length==0" class="alert alert-primary" role="alert">
+      <p>Aún no hay clientes registrados</p>
+    </div>
+    <table class="table table-hover table-sm" *ngIf="clientes.length>0">
 
         <thead>
             <tr>
@@ -20,8 +23,12 @@
                 <td>{{cliente.apellidos}}</td>
                 <td>{{cliente.email}}</td>
                 <td>
-                    <button class="btn btn-primary btn-sm">Editar</button> |
-                    <button class="btn btn-danger btn-sm">Eliminar</button>
+                    <button (click)="cargar_datos(cliente)" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-editar">
+                        Editar
+                    </button> |
+                    <button (click)="delete_cliente(cliente.id)" class="btn btn-danger btn-sm">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         </tbody>
@@ -77,5 +84,54 @@
       </div>
 
     <!-- Final modal nuevo -->
+
+    <!-- Inicio modal editar -->
+
+    <div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-info">
+              <h5 class="modal-title text-white" id="exampleModalLabel">Editar cliente</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+             
+                <form [formGroup]="form_cliente_editar" (ngSubmit)="update_cliente()"> 
+
+                    <div class="row">
+                        <div class="col">
+                           <label for="">Nombre</label>
+                           <input *ngIf="cliente" [(ngModel)]="cliente.nombre" formControlName="nombre" type="text" class="form-control form-control-sm">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                           <label for="">Apellidos</label>
+                           <input *ngIf="cliente" [(ngModel)]="cliente.apellidos" formControlName="apellidos" type="text" class="form-control form-control-sm">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                           <label for="">Email</label>
+                           <input *ngIf="cliente" [(ngModel)]="cliente.email" formControlName="email" type="email" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                    <br>
+                    <button class="btn btn-success">Guardar cambios</button>
+
+                </form>
+               
+
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+    <!-- Final modal editar -->
 
 </div>
