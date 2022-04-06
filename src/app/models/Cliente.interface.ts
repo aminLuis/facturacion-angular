@@ -3,5 +3,6 @@ export interface Cliente{
     nombre:String,
     apellidos:String,
     email:String,
-    creatAt:Date
+    creatAt:Date,
+    foto:String
 }

@@ -19,6 +19,7 @@ export class ClienteServiceService {
   }
 
   URL: string = "http://localhost:8080/api/cliente";
+  URL_img: string= "http://localhost:8080/api/cliente/upload";
 
   constructor(private http:HttpClient) { }
 
@@ -44,6 +45,11 @@ export class ClienteServiceService {
         this.refresh.next();
       }),
       catchError(e=>{
+
+        if(e.status==500){
+          return throwError(e);
+        }
+
         console.error(e.error.mensaje);
         this.mensaje_error('Error al crear cliente');
         return throwError(e);
@@ -58,6 +64,11 @@ export class ClienteServiceService {
         this.refresh.next();
       }),
       catchError(e=>{
+
+        if(e.status==500){
+          return throwError(e);
+        }
+
         console.error(e.error.mensaje);
         this.mensaje_error('Error al editar cliente');
         return throwError(e);
@@ -74,6 +85,25 @@ export class ClienteServiceService {
       catchError(e=>{
         console.error(e.error.mensaje);
         this.mensaje_error('Error al eliminar cliente');
+        return throwError(e);
+      })
+    )
+  }
+
+  public upload_photo(file:File,id:any):Observable<Cliente>{
+    let formData = new FormData();
+    formData.append("file",file);
+    formData.append("id",id);
+
+    return this.http.post<Cliente>(this.URL_img,formData).
+    pipe(
+      tap(()=>{
+        this.refresh.next();
+      }),
+      catchError(e=>{
+        console.error(e.error.mensaje);
+        this.mensaje_error('Error al subir foto');
+        console.log(e.error.mensaje);
         return throwError(e);
       })
     )

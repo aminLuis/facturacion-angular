@@ -23,6 +23,9 @@
                 <td>{{cliente.apellidos}}</td>
                 <td>{{cliente.email}}</td>
                 <td>
+                    <button (click)="cargar_datos(cliente)" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-detalle">
+                      Detalles
+                    </button> |
                     <button (click)="cargar_datos(cliente)" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-editar">
                         Editar
                     </button> |
@@ -133,5 +136,39 @@
       </div>
 
     <!-- Final modal editar -->
+
+    <!-- Inicio modal detalle cliente -->
+
+    <div class="modal fade" id="modal-detalle" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-info">
+            <h5 class="modal-title text-white" id="exampleModalLabel">Detalle del cliente</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            
+            <div class="input-group">
+              <div class="custom-file">
+                <input (change)="seleccionar_foto($event)" type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+              </div>
+              <div class="input-group-append">
+                <button (click)="subir_foto()" class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final modal detalle cliente -->
 
 </div>

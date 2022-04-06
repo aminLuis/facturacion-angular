@@ -18,6 +18,8 @@ export class ClienteComponent implements OnInit {
   form_cliente_nuevo: FormGroup;
   form_cliente_editar:FormGroup;
   @Input() subscription!: Subscription;
+  errores: string[]=[];
+  @Input() private foto_seleccionada!: any;
 
   constructor(private api_cliente:ClienteServiceService, public form:FormBuilder) {
 
@@ -52,9 +54,18 @@ export class ClienteComponent implements OnInit {
 
   save_cliente(){
     if(this.form_cliente_nuevo.valid){
-      this.api_cliente.saveCliente(this.form_cliente_nuevo.value).subscribe();
-      this.mensaje('Se ha registro el cliente');
-      this.form_cliente_nuevo.reset();
+      this.api_cliente.saveCliente(this.form_cliente_nuevo.value).subscribe(cliente =>{
+        this.mensaje('Se ha registro el cliente');
+        this.form_cliente_nuevo.reset();
+      },
+      err=>{
+        this.errores = err.error.response as string[];
+        console.log(err.error);
+      }
+
+      );
+
+      
     }else{
        this.mensaje_error('Hay campos vacios o el formato email no es valido');
     }
@@ -91,6 +102,29 @@ export class ClienteComponent implements OnInit {
     })
   
 }
+
+ seleccionar_foto(event:Event){
+  this.foto_seleccionada = (<HTMLInputElement>event.target).files;
+  console.log(this.foto_seleccionada[0])
+ }
+
+ subir_foto(){
+  if(this.foto_seleccionada==null){
+    this.mensaje_error('No ha seleccionado una foto aún');
+  }else{
+
+    if(this.foto_seleccionada[0].type=="image/png"){
+      this.mensaje_error('Formato png no soportado');
+    }else{
+      this.api_cliente.upload_photo(this.foto_seleccionada[0],this.cliente.id).subscribe(cliente=>{
+        this.mensaje('Se ha subido la imagen');
+      });
+    }
+
+    
+  }
+
+ }
 
   cargar_datos(cliente:Cliente){
     this.cliente = cliente;
