@@ -4,6 +4,7 @@ import { ClienteServiceService } from 'src/app/services/cliente-service.service'
 import { Subscription } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-cliente',
@@ -19,7 +20,8 @@ export class ClienteComponent implements OnInit {
   form_cliente_editar:FormGroup;
   @Input() subscription!: Subscription;
   errores: string[]=[];
-  @Input() private foto_seleccionada!: any;
+  @Input() foto_seleccionada!: any;
+  progress: number = 0;
 
   constructor(private api_cliente:ClienteServiceService, public form:FormBuilder) {
 
@@ -106,6 +108,11 @@ export class ClienteComponent implements OnInit {
  seleccionar_foto(event:Event){
   this.foto_seleccionada = (<HTMLInputElement>event.target).files;
   console.log(this.foto_seleccionada[0])
+
+  if(this.foto_seleccionada[0].type.indexOf('image')<0){
+    this.mensaje_error('Archivo seleccionado no es de tipo Imagen');
+    this.foto_seleccionada = null;
+  }
  }
 
  subir_foto(){
@@ -116,8 +123,23 @@ export class ClienteComponent implements OnInit {
     if(this.foto_seleccionada[0].type=="image/png"){
       this.mensaje_error('Formato png no soportado');
     }else{
-      this.api_cliente.upload_photo(this.foto_seleccionada[0],this.cliente.id).subscribe(cliente=>{
-        this.mensaje('Se ha subido la imagen');
+      this.api_cliente.upload_photo(this.foto_seleccionada[0],this.cliente.id).subscribe(event=>{
+
+        
+        if(event.type === HttpEventType.UploadProgress){
+
+          if(event.total){
+            this.progress = Math.round((event.loaded/event.total)*100);
+          }
+
+        }else if(event.type === HttpEventType.Response){
+          let response:any = event.body;
+          this.cliente = response.cliente as Cliente;
+          this.mensaje('Se ha subido la imagen: '+this.foto_seleccionada[0].name);
+          this.listar_clientes();
+        }
+
+        
       });
     }
 
@@ -128,6 +150,10 @@ export class ClienteComponent implements OnInit {
 
   cargar_datos(cliente:Cliente){
     this.cliente = cliente;
+  }
+
+  iniciar_progress(){
+    this.progress = 0;
   }
 
 

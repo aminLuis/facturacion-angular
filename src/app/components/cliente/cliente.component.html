@@ -10,6 +10,7 @@
 
         <thead>
             <tr>
+                <th>User</th>
                 <th>Nombre</th>
                 <th>Apellidos</th>
                 <th>Email</th>
@@ -19,11 +20,22 @@
 
         <tbody>
             <tr *ngFor="let cliente of clientes">
+              <td>
+
+                <img *ngIf="cliente.foto" width="64px" height="64px" class="img-thumbnail rounded" 
+                src="http://localhost:8080/api/uploads/img/{{cliente.foto}}" 
+                alt="{{cliente.foto}}">
+
+                <img *ngIf="!cliente.foto" width="64px" height="64px" class="img-thumbnail rounded" 
+                src="http://localhost:8080/images/user.png" 
+                alt="{{cliente.foto}}">
+
+              </td>
                 <td>{{cliente.nombre}}</td>
                 <td>{{cliente.apellidos}}</td>
                 <td>{{cliente.email}}</td>
                 <td>
-                    <button (click)="cargar_datos(cliente)" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-detalle">
+                    <button (click)="cargar_datos(cliente); iniciar_progress()" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-detalle">
                       Detalles
                     </button> |
                     <button (click)="cargar_datos(cliente)" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-editar">
@@ -140,7 +152,7 @@
     <!-- Inicio modal detalle cliente -->
 
     <div class="modal fade" id="modal-detalle" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header bg-info">
             <h5 class="modal-title text-white" id="exampleModalLabel">Detalle del cliente</h5>
@@ -149,22 +161,47 @@
             </button>
           </div>
           <div class="modal-body">
-            
-            <div class="input-group">
-              <div class="custom-file">
-                <input (change)="seleccionar_foto($event)" type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+
+            <div class="container">
+
+              <div class="row">
+
+                <div class="col-sm">
+
+                  <ul class="list-group">
+                    <li *ngIf="cliente" class="list-group-item">{{cliente.nombre}}</li>
+                    <li *ngIf="cliente" class="list-group-item">{{cliente.apellidos}}</li>
+                    <li *ngIf="cliente" class="list-group-item">{{cliente.email}}</li>
+                  </ul>
+  
+
+                  <div class="input-group">
+                    <div class="custom-file">
+                      <input (change)="seleccionar_foto($event)" type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                      <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+                    </div>
+                    <div class="input-group-append">
+                      <button (click)="subir_foto()" [disabled]="!foto_seleccionada" class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Subir</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="cliente" class="col-sm">
+                  <img *ngIf="cliente.foto" class="img-thumbnail rounded" src="http://localhost:8080/api/uploads/img/{{cliente.foto}}" alt="{{cliente.foto}}">
+                </div>
+
               </div>
-              <div class="input-group-append">
-                <button (click)="subir_foto()" class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
+            </div>
+            
+            <br>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped" role="progressbar" [ngStyle]="{width: progress+'%'}" attr.aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">
+                {{progress}}%
               </div>
             </div>
 
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
+          
         </div>
       </div>
     </div>

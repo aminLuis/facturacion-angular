@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Cliente } from '../models/Cliente.interface';
 import { Observable, Subject, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';
@@ -90,24 +90,19 @@ export class ClienteServiceService {
     )
   }
 
-  public upload_photo(file:File,id:any):Observable<Cliente>{
+  public upload_photo(file:File,id:any):Observable<HttpEvent<{}>>{
     let formData = new FormData();
     formData.append("file",file);
     formData.append("id",id);
 
-    return this.http.post<Cliente>(this.URL_img,formData).
-    pipe(
-      tap(()=>{
-        this.refresh.next();
-      }),
-      catchError(e=>{
-        console.error(e.error.mensaje);
-        this.mensaje_error('Error al subir foto');
-        console.log(e.error.mensaje);
-        return throwError(e);
-      })
-    )
-  }
+
+    const req = new HttpRequest('POST',this.URL_img, formData, {
+      reportProgress: true
+    });
+
+    return this.http.request(req);
+    
+    }
 
   mensaje_error(texo:string){
     Swal.fire({
